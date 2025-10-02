@@ -1,10 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from 'ahooks';
-import { Input } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { Input, Avatar, Dropdown, Space, Typography } from 'antd';
+import { UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
+import { logout } from '../store/authSlice';
 
 const HISTORY_KEY = 'search_history';
 
 const Header = ({ search, onSearchChange }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector(state => state.auth);
   const [value, setValue] = useState(search || '');
   const [open, setOpen] = useState(false);
   
@@ -21,6 +28,41 @@ const Header = ({ search, onSearchChange }) => {
       onSearchChange?.(debouncedSearchValue);
     }
   }, [debouncedSearchValue, search, onSearchChange]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
+  const handleMenuClick = ({ key }) => {
+    if (key === 'logout') {
+      handleLogout();
+    } else if (key === 'profile') {
+      navigate('/profile');
+    } else if (key === 'settings') {
+      navigate('/settings');
+    }
+  };
+
+  const userMenuItems = [
+    {
+      key: 'profile',
+      icon: <UserOutlined />,
+      label: '个人资料',
+    },
+    {
+      key: 'settings',
+      icon: <SettingOutlined />,
+      label: '设置',
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: '退出登录',
+    },
+  ];
 
   const history = useMemo(() => {
     try {
@@ -62,50 +104,87 @@ const Header = ({ search, onSearchChange }) => {
       }}>
         腾讯文档克隆
       </div>
-      <div style={{ position: 'relative', width: '300px' }}>
-        <Input.Search
-          placeholder="搜索文档标题..."
-          value={value}
-          onChange={(e) => {
-            const v = e.target.value;
-            setValue(v);
-            // onSearchChange will be called automatically via debounced effect
-          }}
-          onSearch={(val) => commitSearch(val.trim())}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 120)}
-          style={{ width: '100%' }}
-        />
-        {open && history.length > 0 && (
-          <div style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            background: '#fff',
-            border: '1px solid #d9d9d9',
+      
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ position: 'relative', width: '300px' }}>
+          <Input.Search
+            placeholder="搜索文档标题..."
+            value={value}
+            onChange={(e) => {
+              const v = e.target.value;
+              setValue(v);
+              // onSearchChange will be called automatically via debounced effect
+            }}
+            onSearch={(val) => commitSearch(val.trim())}
+            onFocus={() => setOpen(true)}
+            onBlur={() => setTimeout(() => setOpen(false), 120)}
+            style={{ width: '100%' }}
+          />
+          {open && history.length > 0 && (
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              background: '#fff',
+              border: '1px solid #d9d9d9',
+              borderRadius: '6px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              zIndex: 1000,
+              marginTop: '4px'
+            }}>
+              {history.map((h, idx) => (
+                <div 
+                  key={idx} 
+                  style={{
+                    padding: '8px 12px',
+                    cursor: 'pointer',
+                    borderBottom: idx < history.length - 1 ? '1px solid #f0f0f0' : 'none'
+                  }}
+                  onMouseDown={() => commitSearch(h)}
+                  onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
+                  onMouseLeave={(e) => e.target.style.background = '#fff'}
+                >
+                  {h}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* User Avatar and Menu */}
+        <Dropdown
+          menu={{ items: userMenuItems, onClick: handleMenuClick }}
+          placement="bottomRight"
+          trigger={['click']}
+        >
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            cursor: 'pointer',
+            padding: '4px 8px',
             borderRadius: '6px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            zIndex: 1000,
-            marginTop: '4px'
-          }}>
-            {history.map((h, idx) => (
-              <div 
-                key={idx} 
-                style={{
-                  padding: '8px 12px',
-                  cursor: 'pointer',
-                  borderBottom: idx < history.length - 1 ? '1px solid #f0f0f0' : 'none'
+            transition: 'background-color 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+          >
+            <Space>
+              <Avatar 
+                size="small" 
+                style={{ 
+                  backgroundColor: '#1890ff',
+                  fontSize: '12px'
                 }}
-                onMouseDown={() => commitSearch(h)}
-                onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
-                onMouseLeave={(e) => e.target.style.background = '#fff'}
               >
-                {h}
-              </div>
-            ))}
+                {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+              </Avatar>
+              <Typography.Text style={{ fontSize: '13px' }}>
+                {user?.name || '用户'}
+              </Typography.Text>
+            </Space>
           </div>
-        )}
+        </Dropdown>
       </div>
     </header>
   );

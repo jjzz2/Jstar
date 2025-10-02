@@ -11,7 +11,9 @@ import {
   Modal, 
   Input, 
   message,
-  Popconfirm
+  Popconfirm,
+  Card,
+  Tag
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -80,12 +82,30 @@ const DashboardPage = ({ searchTerm = '' }) => {
             key: 'title',
             render: (text, record) => (
                 <Space>
-                    <FileTextOutlined />
-                    <Link to={`/docs/${record.id}`} style={{ fontWeight: 500 }}>
+                    <FileTextOutlined style={{ color: record.type === 'FORM' ? '#52c41a' : '#1890ff' }} />
+                    <Link to={record.type === 'FORM' ? `/forms/${record.id}` : `/docs/${record.id}`} style={{ fontWeight: 500 }}>
                         {text}
                     </Link>
+                    {record.type === 'FORM' && (
+                        <Tag color="green" size="small">表单</Tag>
+                    )}
                 </Space>
             ),
+        },
+        {
+            title: '类型',
+            dataIndex: 'type',
+            key: 'type',
+            render: (type) => (
+                <Tag color={type === 'FORM' ? 'green' : 'blue'}>
+                    {type === 'FORM' ? '表单' : '文档'}
+                </Tag>
+            ),
+            filters: [
+                { text: '文档', value: 'DOC' },
+                { text: '表单', value: 'FORM' },
+            ],
+            onFilter: (value, record) => record.type === value,
         },
         {
             title: '最后更新',
@@ -102,12 +122,12 @@ const DashboardPage = ({ searchTerm = '' }) => {
                     <Button 
                         type="link" 
                         icon={<EditOutlined />}
-                        onClick={() => navigate(`/docs/${record.id}`)}
+                        onClick={() => navigate(record.type === 'FORM' ? `/forms/${record.id}` : `/docs/${record.id}`)}
                     >
                         编辑
                     </Button>
                     <Popconfirm
-                        title="确定要将该文档移入回收站吗？"
+                        title="确定要将该项目移入回收站吗？"
                         onConfirm={() => handleDelete(record.id)}
                         okText="确定"
                         cancelText="取消"
@@ -126,32 +146,62 @@ const DashboardPage = ({ searchTerm = '' }) => {
     ];
 
     return (
-        <div>
-            <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Title level={2} style={{ margin: 0 }}>
-                    我的文档
-                </Title>
-                <Button 
-                    type="primary" 
-                    icon={<PlusOutlined />}
-                    onClick={() => setIsModalVisible(true)}
-                >
-                    新建文档
-                </Button>
-            </div>
-
-            <Table
-                columns={columns}
-                dataSource={docs}
-                rowKey="id"
-                loading={status === 'loading'}
-                pagination={{
-                    pageSize: 10,
-                    showSizeChanger: true,
-                    showQuickJumper: true,
-                    showTotal: (total) => `共 ${total} 个文档`,
+        <div style={{ padding: '24px', background: '#f5f5f5', minHeight: 'calc(100vh - 64px)' }}>
+            <Card 
+                style={{ 
+                    marginBottom: '24px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                 }}
-            />
+                bodyStyle={{ padding: '20px 24px' }}
+            >
+                <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    marginBottom: '24px'
+                }}>
+                    <div>
+                        <Title level={2} style={{ margin: 0, marginBottom: '4px' }}>
+                            我的工作台
+                        </Title>
+                        <Typography.Text type="secondary">
+                            管理您的文档和表单
+                        </Typography.Text>
+                    </div>
+                    <Space>
+                        <Button 
+                            type="primary" 
+                            icon={<PlusOutlined />}
+                            onClick={() => setIsModalVisible(true)}
+                            size="large"
+                        >
+                            新建文档
+                        </Button>
+                    </Space>
+                </div>
+
+                <Table
+                    columns={columns}
+                    dataSource={docs}
+                    rowKey="id"
+                    loading={status === 'loading'}
+                    pagination={{
+                        pageSize: 10,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                        showTotal: (total) => `共 ${total} 个项目`,
+                        style: { 
+                            display: 'flex', 
+                            justifyContent: 'center',
+                            marginTop: '24px'
+                        }
+                    }}
+                    style={{
+                        background: '#fff',
+                        borderRadius: '8px'
+                    }}
+                />
+            </Card>
 
             <Modal
                 title="新建文档"
@@ -163,6 +213,7 @@ const DashboardPage = ({ searchTerm = '' }) => {
                 }}
                 okText="创建"
                 cancelText="取消"
+                width={400}
             >
                 <Input
                     placeholder="请输入文档标题"
@@ -170,6 +221,7 @@ const DashboardPage = ({ searchTerm = '' }) => {
                     onChange={(e) => setNewDocTitle(e.target.value)}
                     onPressEnter={handleCreate}
                     autoFocus
+                    size="large"
                 />
             </Modal>
             

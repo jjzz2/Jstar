@@ -18,24 +18,67 @@ function generateId() {
   return `doc_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-// Generate realistic sample documents using faker
+// Generate realistic sample documents and forms using faker
 function generateSampleDocuments() {
-  const documentCount = 8; // Generate 8 sample documents
+  const documentCount = 6; // Generate 6 documents
+  const formCount = 2; // Generate 2 forms
   
+  // Generate documents
   for (let i = 0; i < documentCount; i++) {
-    const id = generateId();
+    const id = generateId('doc');
     const title = faker.lorem.sentence({ min: 3, max: 8 }).replace('.', '');
     const paragraphCount = faker.number.int({ min: 2, max: 5 });
     const content = `<h1>${title}</h1>${faker.lorem.paragraphs(paragraphCount, '<p>%s</p>')}`;
-    const lastUpdated = faker.date.past({ years: 0.5 }).toISOString(); // Within last 6 months
-    const isTrashed = faker.datatype.boolean({ probability: 0.1 }); // 10% chance of being trashed
+    const lastUpdated = faker.date.past({ years: 0.5 }).toISOString();
+    const isTrashed = faker.datatype.boolean({ probability: 0.1 });
     
     documents.set(id, { 
       id, 
       title, 
       content, 
       lastUpdated, 
-      isTrashed 
+      isTrashed,
+      type: 'DOC'
+    });
+  }
+  
+  // Generate forms
+  for (let i = 0; i < formCount; i++) {
+    const id = generateId('form');
+    const title = faker.lorem.sentence({ min: 3, max: 6 }).replace('.', '') + ' 问卷';
+    const formData = {
+      title: title,
+      description: faker.lorem.sentence(),
+      questions: [
+        {
+          id: faker.string.uuid(),
+          type: 'questionInput',
+          title: '请输入您的姓名',
+          props: { placeholder: '请输入姓名' }
+        },
+        {
+          id: faker.string.uuid(),
+          type: 'questionRadio',
+          title: '您的性别',
+          props: {
+            options: [
+              { text: '男', value: 'male' },
+              { text: '女', value: 'female' }
+            ]
+          }
+        }
+      ]
+    };
+    const lastUpdated = faker.date.past({ years: 0.5 }).toISOString();
+    const isTrashed = faker.datatype.boolean({ probability: 0.1 });
+    
+    documents.set(id, { 
+      id, 
+      title, 
+      content: JSON.stringify(formData),
+      lastUpdated, 
+      isTrashed,
+      type: 'FORM'
     });
   }
 }
@@ -49,9 +92,11 @@ app.locals.generateId = generateId;
 
 const authRouter = require('./routes/auth');
 const docsRouter = require('./routes/documents');
+const formsRouter = require('./routes/forms');
 
 app.use('/api/auth', authRouter);
 app.use('/api/documents', docsRouter);
+app.use('/api/forms', formsRouter);
 
 // AI Chat API endpoint
 app.post('/api/ai/chat', async (req, res) => {
