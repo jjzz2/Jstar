@@ -1,0 +1,9 @@
+.container { padding: 8px; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.list { margin: 0; padding: 0; list-style: none; }
+.item { display: flex; align-items: center; padding: 14px 10px; border-bottom: 1px solid #e9ecef; }
+.item:hover { background: #f8f9fa; }
+.meta { color: #6c757d; font-size: 13px; }
+.title { font-weight: 600; color: #0d6efd; text-decoration: none; }
+
+

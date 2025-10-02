@@ -1,0 +1,6 @@
+.container { padding: 8px; }
+.list { margin: 0; padding: 0; list-style: none; }
+.item { display: flex; align-items: center; padding: 14px 10px; border-bottom: 1px solid #e9ecef; }
+.item:hover { background: #fff7f7; }
+.meta { color: #6c757d; font-size: 13px; }
+

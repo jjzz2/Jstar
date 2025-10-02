@@ -1,0 +1,15 @@
+.card {
+  max-width: 420px;
+  margin: 80px auto;
+  padding: 28px;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+.title { margin-top: 0; margin-bottom: 16px; }
+.label { color: #6c757d; font-size: 14px; display: block; margin-bottom: 6px; }
+.row { margin-bottom: 12px; }
+.actions { display: flex; gap: 12px; align-items: center; }
+.hint { color: #6c757d; font-size: 14px; }
+

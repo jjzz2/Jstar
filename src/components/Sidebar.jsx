@@ -1,19 +1,40 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { FiHome, FiTrash2 } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Menu } from 'antd';
+import { HomeOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const Sidebar = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const menuItems = [
+    {
+      key: '/',
+      icon: <HomeOutlined />,
+      label: '我的文档',
+    },
+    {
+      key: '/trash',
+      icon: <DeleteOutlined />,
+      label: '回收站',
+    },
+  ];
+
+  const handleMenuClick = ({ key }) => {
+    navigate(key);
+  };
+
   return (
-    <aside className="app-sidebar">
-      <nav>
-        <NavLink className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`} to="/">
-          <FiHome style={{ marginRight: 8 }} /> 首页
-        </NavLink>
-        <NavLink className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`} to="/trash">
-          <FiTrash2 style={{ marginRight: 8 }} /> 回收站
-        </NavLink>
-      </nav>
-    </aside>
+    <Menu
+      mode="inline"
+      selectedKeys={[location.pathname]}
+      items={menuItems}
+      onClick={handleMenuClick}
+      style={{ 
+        border: 'none',
+        paddingTop: '16px'
+      }}
+    />
   );
 };
 
