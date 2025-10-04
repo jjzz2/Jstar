@@ -1,4 +1,4 @@
-import { apiClient } from '../api';
+import { apiClient } from '@/api';
 
 /**
  * API请求工具类
@@ -17,7 +17,20 @@ export class ApiUtils {
         return result.data;
       } catch (error) {
         console.error('API请求失败:', error);
-        throw error;
+        
+        // 统一错误处理
+        if (error.response) {
+          // 服务器响应错误
+          const { status, data } = error.response;
+          const errorMessage = data?.message || `请求失败 (${status})`;
+          throw new Error(errorMessage);
+        } else if (error.request) {
+          // 网络错误
+          throw new Error('网络连接失败，请检查网络设置');
+        } else {
+          // 其他错误
+          throw new Error(error.message || '请求失败');
+        }
       }
     };
   }

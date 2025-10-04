@@ -12,6 +12,7 @@ import FormsPage from '../pages/FormsPage';
 import FormBuilderPage from '../pages/FormBuilderPage';
 import UserSettingsPage from '../pages/UserSettingsPage';
 import AuthPage from '../pages/AuthPage';
+import LocalFilesPage from '../pages/LocalFilesPage';
 
 // 路由配置
 export const router = createBrowserRouter([
@@ -33,6 +34,26 @@ export const router = createBrowserRouter([
       <Layout>
         <ProtectedRoute>
           <DashboardPage />
+        </ProtectedRoute>
+      </Layout>
+    ),
+  },
+  {
+    path: '/docs',
+    element: (
+      <Layout>
+        <ProtectedRoute>
+          <DashboardPage />
+        </ProtectedRoute>
+      </Layout>
+    ),
+  },
+  {
+    path: '/local-files',
+    element: (
+      <Layout>
+        <ProtectedRoute>
+          <LocalFilesPage />
         </ProtectedRoute>
       </Layout>
     ),

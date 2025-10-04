@@ -1,8 +1,8 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Dropdown, Space, Typography } from 'antd';
-import { UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
+import { Avatar, Dropdown, Space, Typography, Button } from 'antd';
+import { UserOutlined, LogoutOutlined, SettingOutlined, MenuOutlined } from '@ant-design/icons';
 import { logout } from '../../store/authSlice';
 import { SearchInput } from '../Common';
 import { useAuth } from '../../hooks';
@@ -10,9 +10,10 @@ import styles from './styles.module.css';
 
 const HISTORY_KEY = 'search_history';
 
-const Header = ({ search, onSearchChange }) => {
+const Header = ({ search, onSearchChange, onMobileMenuToggle }) => {
   const navigate = useNavigate();
   const { user, handleLogout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleMenuClick = ({ key }) => {
     if (key === 'logout') {
@@ -45,10 +46,23 @@ const Header = ({ search, onSearchChange }) => {
     },
   ];
 
+  const handleMobileMenuToggle = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+    onMobileMenuToggle?.(!isMobileMenuOpen);
+  };
+
   return (
     <header className={styles.header}>
-      <div className={styles.logo}>
-        腾讯文档克隆
+      <div className={styles.leftSection}>
+        <Button
+          type="text"
+          icon={<MenuOutlined />}
+          className={styles.mobileMenuButton}
+          onClick={handleMobileMenuToggle}
+        />
+        <div className={styles.logo}>
+          腾讯文档克隆
+        </div>
       </div>
       
       <div className={styles.rightSection}>

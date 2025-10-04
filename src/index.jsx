@@ -4,9 +4,9 @@ import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
-import { store } from './store/store';
-import { router } from './router/index.jsx';
-import { initPerformanceMonitoring } from './utils/performance';
+import { store } from '@store/store';
+import { router } from '@/router';
+import { initPerformanceMonitoring } from '@utils';
 import './index.css';
 
 // 初始化性能监控

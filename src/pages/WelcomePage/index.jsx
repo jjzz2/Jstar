@@ -85,7 +85,7 @@ const WelcomePage = () => {
                 type="primary" 
                 size="large" 
                 icon={<FileTextOutlined />}
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/docs')}
                 className={styles.primaryButton}
               >
                 开始使用

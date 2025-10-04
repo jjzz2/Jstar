@@ -1,0 +1,13 @@
+.spinner {
+  width: 100%;
+  min-height: 200px;
+}
+
+.centerSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  width: 100%;
+}
+

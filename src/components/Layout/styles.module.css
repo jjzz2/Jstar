@@ -1,16 +1,21 @@
 .layout {
   min-height: 100vh;
+  background: var(--bg-color);
 }
 
 .header {
   padding: 0;
   background: #fff;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-light);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .sider {
   background: #fff;
-  border-right: 1px solid #f0f0f0;
+  border-right: 1px solid var(--border-color);
   overflow: auto;
   height: calc(100vh - 64px);
   position: fixed;
@@ -18,12 +23,37 @@
   top: 64px;
   z-index: 1;
   width: 240px;
+  box-shadow: var(--shadow-light);
 }
 
 .content {
   margin-left: 240px;
-  padding: 24px;
-  background: #fff;
+  padding: var(--spacing-lg);
+  background: var(--bg-color);
   min-height: calc(100vh - 64px);
+  transition: margin-left 0.3s ease;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .sider {
+    left: -240px;
+    transition: left 0.3s ease;
+  }
+  
+  .sider.mobileOpen {
+    left: 0;
+  }
+  
+  .content {
+    margin-left: 0;
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: var(--spacing-sm);
+  }
 }
 

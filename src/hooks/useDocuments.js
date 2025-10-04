@@ -12,7 +12,8 @@ const useDocuments = (options = {}) => {
     searchTerm = '',
     sortField = 'updatedAt',
     sortOrder = 'desc',
-    trashed = false
+    trashed = false,
+    excludeLocalFiles = false
   } = options;
 
   // 获取文档列表
@@ -28,11 +29,12 @@ const useDocuments = (options = {}) => {
       search: searchTerm,
       sort: sortField,
       order: sortOrder,
-      trashed
+      trashed,
+      excludeLocalFiles
     }),
     {
-      refreshDeps: [searchTerm, sortField, sortOrder, trashed],
-      cacheKey: `documents-${searchTerm}-${sortField}-${sortOrder}-${trashed}`,
+      refreshDeps: [searchTerm, sortField, sortOrder, trashed, excludeLocalFiles],
+      cacheKey: `documents-${searchTerm}-${sortField}-${sortOrder}-${trashed}-${excludeLocalFiles}`,
       staleTime: 5 * 60 * 1000, // 5分钟缓存
     }
   );

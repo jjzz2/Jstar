@@ -29,6 +29,13 @@ export default defineConfig({
   build: {
     outDir: 'build',
     sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -37,11 +44,16 @@ export default defineConfig({
           router: ['react-router-dom'],
           redux: ['@reduxjs/toolkit', 'react-redux'],
           ahooks: ['ahooks'],
+          axios: ['axios'],
         },
       },
     },
+    chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'antd', 'ahooks'],
+    include: ['react', 'react-dom', 'antd', 'ahooks', 'axios'],
+  },
+  esbuild: {
+    drop: ['console', 'debugger'],
   },
 });

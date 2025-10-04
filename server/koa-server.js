@@ -20,7 +20,12 @@ const app = new Koa();
 
 // 基础中间件配置
 app.use(cors());
-app.use(bodyParser());
+app.use(bodyParser({
+  enableTypes: ['json', 'form'],
+  jsonLimit: '10mb',
+  formLimit: '10mb',
+  textLimit: '10mb'
+}));
 app.use(json());
 
 // 请求日志中间件

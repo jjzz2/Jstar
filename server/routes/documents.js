@@ -12,17 +12,31 @@ const router = new Router();
  */
 router.get('/api/docs', async (ctx) => {
   try {
-    const { trashed, search, page = 1, limit = 20, sort = 'lastUpdated' } = ctx.query;
+    const { trashed, search, page = 1, limit = 20, sort = 'lastUpdated', type, excludeLocalFiles } = ctx.query;
     console.log('trashed',trashed)
     const trashedBool = String(trashed).toLowerCase() === 'true';
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 20;
+    const excludeLocalFilesBool = String(excludeLocalFiles).toLowerCase() === 'true';
     
     // 构建查询条件
     const query = {
-      type: 'DOC',
       isTrashed: trashedBool
     };
+    
+    // 根据类型过滤
+    if (type) {
+      query.type = type;
+    } else if (excludeLocalFilesBool) {
+      query.type = 'DOC'; // 只包含数据库文档
+    } else {
+      query.type = { $in: ['DOC', 'FILE'] }; // 默认包含文档和本地文件
+    }
+    
+    // 如果排除本地文件，添加额外条件
+    if (excludeLocalFilesBool) {
+      query.isLocalFile = { $ne: true };
+    }
     
     // 搜索条件
     if (search && typeof search === 'string') {
@@ -97,7 +111,7 @@ router.get('/api/docs/:id', async (ctx) => {
       return;
     }
     
-    if (document.type !== 'DOC') {
+    if (document.type !== 'DOC' && document.type !== 'FILE') {
       ctx.status = 400;
       ctx.body = { message: 'Not a document' };
       return;
@@ -124,28 +138,55 @@ router.get('/api/docs/:id', async (ctx) => {
  * POST /api/docs
  */
 router.post('/api/docs', async (ctx) => {
-  const documents = ctx.app.context.documents;
-  const { title } = ctx.request.body || {};
-  
-  if (!title || typeof title !== 'string') {
-    ctx.status = 400;
-    ctx.body = { message: 'title is required' };
-    return;
+  try {
+    console.log('收到创建文档请求:', ctx.request.body);
+    const { title, content = '', type = 'DOC', originalFileName, fileSize, mimeType, isLocalFile = false } = ctx.request.body || {};
+    
+    console.log('解析后的参数:', { title, content, type, originalFileName, fileSize, mimeType, isLocalFile });
+    
+    if (!title || typeof title !== 'string') {
+      console.log('标题验证失败:', { title, type: typeof title });
+      ctx.status = 400;
+      ctx.body = { message: 'title is required' };
+      return;
+    }
+
+    // 创建文档数据
+    const documentData = {
+      title,
+      content,
+      type,
+      isTrashed: false,
+      author: null, // 暂时不设置作者，避免引用错误
+      lastUpdated: new Date(),
+      ...(isLocalFile && {
+        originalFileName,
+        fileSize,
+        mimeType,
+        isLocalFile: true
+      })
+    };
+
+    const document = new Document(documentData);
+    await document.save();
+
+    ctx.status = 201;
+    ctx.body = {
+      documentId: document._id,
+      id: document._id,
+      title: document.title,
+      content: document.content,
+      type: document.type,
+      lastUpdated: document.lastUpdated,
+      isTrashed: document.isTrashed,
+      isLocalFile: document.isLocalFile,
+      originalFileName: document.originalFileName
+    };
+  } catch (error) {
+    console.error('创建文档失败:', error);
+    ctx.status = 500;
+    ctx.body = { message: '创建文档失败' };
   }
-  
-  const id = generateId('doc');
-  const newDoc = { 
-    id, 
-    title, 
-    content: '', 
-    lastUpdated: nowIso(), 
-    isTrashed: false,
-    type: 'DOC'
-  };
-  
-  documents.set(id, newDoc);
-  ctx.status = 201;
-  ctx.body = newDoc;
 });
 
 /**
@@ -162,7 +203,7 @@ router.patch('/api/docs/:id', async (ctx) => {
     return;
   }
   
-  if (doc.type !== 'DOC') {
+  if (doc.type !== 'DOC' && doc.type !== 'FILE') {
     ctx.status = 400;
     ctx.body = { message: 'Not a document' };
     return;
@@ -204,7 +245,7 @@ router.delete('/api/docs/:id', async (ctx) => {
     return;
   }
   
-  if (doc.type !== 'DOC') {
+  if (doc.type !== 'DOC' && doc.type !== 'FILE') {
     ctx.status = 400;
     ctx.body = { message: 'Not a document' };
     return;

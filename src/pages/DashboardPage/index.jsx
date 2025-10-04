@@ -21,7 +21,7 @@ const DashboardPage = ({ searchTerm = '' }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [newDocTitle, setNewDocTitle] = useState('');
 
-    // 使用自定义hook管理文档
+    // 使用自定义hook管理文档，排除本地文件
     const {
         documents,
         loading,
@@ -29,7 +29,7 @@ const DashboardPage = ({ searchTerm = '' }) => {
         handleCreateDocument,
         handleDeleteDocument,
         refreshDocuments
-    } = useDocuments({ searchTerm });
+    } = useDocuments({ searchTerm, excludeLocalFiles: true });
 
     // 处理创建文档
     const handleCreate = useCallback(async () => {

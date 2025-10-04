@@ -54,6 +54,16 @@
   color: #8c8c8c;
 }
 
+.fileName {
+  font-size: 11px;
+  color: #999;
+  font-style: italic;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .description {
   display: block;
   margin-bottom: 16px;

@@ -12,8 +12,28 @@ const documentSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['DOC', 'FORM'],
+    enum: ['DOC', 'FORM', 'FILE'],
     required: true
+  },
+  // 文件相关字段
+  originalFileName: {
+    type: String,
+    trim: true
+  },
+  filePath: {
+    type: String,
+    trim: true
+  },
+  fileSize: {
+    type: Number
+  },
+  mimeType: {
+    type: String,
+    trim: true
+  },
+  isLocalFile: {
+    type: Boolean,
+    default: false
   },
   isTrashed: {
     type: Boolean,
@@ -26,7 +46,7 @@ const documentSchema = new mongoose.Schema({
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false
   },
   tags: [{
     type: String,
