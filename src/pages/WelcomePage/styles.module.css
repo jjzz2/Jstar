@@ -1,0 +1,288 @@
+/* 欢迎页面容器 */
+.welcomeContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 背景动画 */
+.backgroundAnimation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.floatingShape {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.floatingShape:nth-child(1) {
+  width: 80px;
+  height: 80px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.floatingShape:nth-child(2) {
+  width: 120px;
+  height: 120px;
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.floatingShape:nth-child(3) {
+  width: 60px;
+  height: 60px;
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+/* 主要内容 */
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 0 24px;
+}
+
+/* 英雄区域 */
+.heroSection {
+  text-align: center;
+  padding: 120px 0 80px;
+  color: white;
+}
+
+.heroContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.heroTitle {
+  color: white !important;
+  font-size: 4rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 24px !important;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.rocketIcon {
+  font-size: 3.5rem;
+  color: #ffd700;
+  animation: rocket 2s ease-in-out infinite;
+}
+
+@keyframes rocket {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.heroSubtitle {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 48px !important;
+  line-height: 1.6;
+}
+
+.heroActions {
+  margin-top: 32px;
+}
+
+.primaryButton {
+  background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+  border: none;
+  height: 56px;
+  padding: 0 32px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 28px;
+  box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4);
+  transition: all 0.3s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(255, 107, 107, 0.6);
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  height: 56px;
+  padding: 0 32px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 28px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* 统计区域 */
+.statsSection {
+  padding: 80px 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  margin: 0 -24px;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* 功能特性区域 */
+.featuresSection {
+  padding: 80px 0;
+  background: white;
+  margin: 0 -24px;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 48px !important;
+  color: #333;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+}
+
+.featureCard {
+  height: 100%;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+}
+
+.featureCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.featureContent {
+  text-align: center;
+  padding: 24px;
+}
+
+.featureIcon {
+  font-size: 3rem;
+  color: #667eea;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.featureTitle {
+  color: #333 !important;
+  margin-bottom: 16px !important;
+  font-weight: 600 !important;
+}
+
+.featureDescription {
+  color: #666;
+  line-height: 1.6;
+  margin: 0 !important;
+}
+
+/* 技术栈区域 */
+.techStackSection {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+  margin: 0 -24px;
+}
+
+.techStack {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.techItem {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.techItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2.5rem !important;
+  }
+  
+  .heroSubtitle {
+    font-size: 1.2rem;
+  }
+  
+  .heroActions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .primaryButton,
+  .secondaryButton {
+    width: 200px;
+    margin: 8px 0;
+  }
+  
+  .sectionTitle {
+    font-size: 2rem !important;
+  }
+  
+  .techStack {
+    flex-direction: column;
+    align-items: center;
+  }
+}

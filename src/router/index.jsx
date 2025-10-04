@@ -4,6 +4,7 @@ import Layout from '../components/Layout';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 // 页面组件导入
+import WelcomePage from '../pages/WelcomePage';
 import DashboardPage from '../pages/DashboardPage';
 import EditorPage from '../pages/EditorPage';
 import TrashPage from '../pages/TrashPage';
@@ -15,6 +16,10 @@ import AuthPage from '../pages/AuthPage';
 // 路由配置
 export const router = createBrowserRouter([
   {
+    path: '/',
+    element: <WelcomePage />,
+  },
+  {
     path: '/login',
     element: <AuthPage />,
   },
@@ -23,7 +28,7 @@ export const router = createBrowserRouter([
     element: <AuthPage />,
   },
   {
-    path: '/',
+    path: '/dashboard',
     element: (
       <Layout>
         <ProtectedRoute>
