@@ -131,7 +131,7 @@ const initialState = {
 export const loadFormData = createAsyncThunk(
   'formBuilder/loadFormData',
   async (formId) => {
-    const formData = await formsService.fetchFormStructure(formId);
+    const formData = await formsService.fetchForm(formId);
     return formData;
   }
 );
@@ -278,12 +278,33 @@ const formBuilderSlice = createSlice({
       })
       .addCase(loadFormData.fulfilled, (state, action) => {
         state.loading = false;
-        const formData = JSON.parse(action.payload.content);
-        state.componentList = formData.questions || [];
-        state.pageInfo = {
-          title: formData.title || '未命名表单',
-          desc: formData.description || '',
-        };
+        try {
+          // 安全解析JSON，处理undefined或null的情况
+          const content = action.payload?.content;
+          if (!content) {
+            console.warn('Form content is empty, using default values');
+            state.componentList = [];
+            state.pageInfo = {
+              title: action.payload?.title || '未命名表单',
+              desc: action.payload?.description || '',
+            };
+            return;
+          }
+          
+          const formData = JSON.parse(content);
+          state.componentList = formData.questions || [];
+          state.pageInfo = {
+            title: formData.title || action.payload?.title || '未命名表单',
+            desc: formData.description || action.payload?.description || '',
+          };
+        } catch (error) {
+          console.error('Failed to parse form content:', error);
+          state.componentList = [];
+          state.pageInfo = {
+            title: action.payload?.title || '未命名表单',
+            desc: action.payload?.description || '',
+          };
+        }
       })
       .addCase(loadFormData.rejected, (state, action) => {
         state.loading = false;

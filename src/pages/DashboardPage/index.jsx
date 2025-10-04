@@ -1,207 +1,128 @@
-import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchDocs, createDoc, updateDocTrashed } from '../../store/docsSlice';
-import AiAssistant from '../../components/AiAssistant';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDocuments } from '../../hooks';
+import { ItemCard } from '../../components/Common';
 import { 
-  Table, 
   Button, 
-  Space, 
   Typography, 
   Modal, 
   Input, 
   message,
-  Popconfirm,
-  Card,
-  Tag
+  List,
+  Empty,
+  Spin
 } from 'antd';
-import { 
-  PlusOutlined, 
-  EditOutlined, 
-  DeleteOutlined,
-  FileTextOutlined 
-} from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 
 const DashboardPage = ({ searchTerm = '' }) => {
-    const dispatch = useDispatch();
-    const docs = useSelector(s => s.docs.list);
-    const status = useSelector(s => s.docs.status);
     const navigate = useNavigate();
-    const [isModalVisible, setIsModalVisible] = React.useState(false);
-    const [newDocTitle, setNewDocTitle] = React.useState('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [newDocTitle, setNewDocTitle] = useState('');
 
-    const load = React.useCallback(async (search = '') => {
-        await dispatch(fetchDocs({ trashed: false, search }));
-    }, [dispatch]);
+    // 使用自定义hook管理文档
+    const {
+        documents,
+        loading,
+        error,
+        handleCreateDocument,
+        handleDeleteDocument,
+        refreshDocuments
+    } = useDocuments({ searchTerm });
 
-    useEffect(() => {
-        document.title = "我的文档";
-        load();
-    }, [load]);
-
-    useEffect(() => {
-        load(searchTerm);
-    }, [searchTerm, load]);
-
-    if (status === 'loading') {
-        return <div className="page"><h1>正在加载文件列表...</h1></div>;
-    }
-
-    const handleCreate = async () => {
+    // 处理创建文档
+    const handleCreate = useCallback(async () => {
         if (!newDocTitle.trim()) {
             message.error('请输入文档标题');
             return;
         }
-        const res = await dispatch(createDoc({ title: newDocTitle.trim() }));
-        if (res.meta.requestStatus === 'fulfilled') {
+
+        try {
+            const result = await handleCreateDocument({
+                title: newDocTitle.trim(),
+                content: '',
+                type: 'DOC'
+            });
+            
             message.success('文档创建成功');
             setIsModalVisible(false);
             setNewDocTitle('');
-            navigate(`/docs/${res.payload.id}`);
-        } else {
-            message.error('文档创建失败');
+            navigate(`/docs/${result.data.id}`);
+        } catch (error) {
+            message.error('创建文档失败');
         }
-    };
+    }, [newDocTitle, handleCreateDocument, navigate]);
 
-    const handleDelete = async (id) => {
-        const res = await dispatch(updateDocTrashed({ id, isTrashed: true }));
-        if (res.meta.requestStatus === 'fulfilled') {
-            message.success('文档已移入回收站');
-            await load(searchTerm);
-        } else {
-            message.error('删除失败');
+    // 处理删除文档
+    const handleDelete = useCallback(async (doc) => {
+        try {
+            await handleDeleteDocument(doc.id);
+            message.success('文档已删除');
+        } catch (error) {
+            message.error('删除文档失败');
         }
-    };
+    }, [handleDeleteDocument]);
 
-    const columns = [
-        {
-            title: '文档标题',
-            dataIndex: 'title',
-            key: 'title',
-            render: (text, record) => (
-                <Space>
-                    <FileTextOutlined style={{ color: record.type === 'FORM' ? '#52c41a' : '#1890ff' }} />
-                    <Link to={record.type === 'FORM' ? `/forms/${record.id}` : `/docs/${record.id}`} style={{ fontWeight: 500 }}>
-                        {text}
-                    </Link>
-                    {record.type === 'FORM' && (
-                        <Tag color="green" size="small">表单</Tag>
-                    )}
-                </Space>
-            ),
-        },
-        {
-            title: '类型',
-            dataIndex: 'type',
-            key: 'type',
-            render: (type) => (
-                <Tag color={type === 'FORM' ? 'green' : 'blue'}>
-                    {type === 'FORM' ? '表单' : '文档'}
-                </Tag>
-            ),
-            filters: [
-                { text: '文档', value: 'DOC' },
-                { text: '表单', value: 'FORM' },
-            ],
-            onFilter: (value, record) => record.type === value,
-        },
-        {
-            title: '最后更新',
-            dataIndex: 'lastUpdated',
-            key: 'lastUpdated',
-            render: (date) => new Date(date).toLocaleString(),
-            sorter: (a, b) => new Date(a.lastUpdated) - new Date(b.lastUpdated),
-        },
-        {
-            title: '操作',
-            key: 'action',
-            render: (_, record) => (
-                <Space size="middle">
-                    <Button 
-                        type="link" 
-                        icon={<EditOutlined />}
-                        onClick={() => navigate(record.type === 'FORM' ? `/forms/${record.id}` : `/docs/${record.id}`)}
-                    >
-                        编辑
-                    </Button>
-                    <Popconfirm
-                        title="确定要将该项目移入回收站吗？"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="确定"
-                        cancelText="取消"
-                    >
-                        <Button 
-                            type="link" 
-                            danger 
-                            icon={<DeleteOutlined />}
-                        >
-                            删除
-                        </Button>
-                    </Popconfirm>
-                </Space>
-            ),
-        },
-    ];
+    // 处理编辑文档
+    const handleEdit = useCallback((doc) => {
+        navigate(`/docs/${doc.id}`);
+    }, [navigate]);
+
+    // 渲染文档列表
+    const renderDocumentList = useMemo(() => {
+        if (documents.length === 0) {
+            return (
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description="暂无文档"
+                    style={{ marginTop: '50px' }}
+                />
+            );
+        }
+
+        return (
+            <List
+                grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 4 }}
+                dataSource={documents}
+                renderItem={(doc) => (
+                    <List.Item>
+                        <ItemCard
+                            item={doc}
+                            type="document"
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                            onView={handleEdit}
+                        />
+                    </List.Item>
+                )}
+            />
+        );
+    }, [documents, handleEdit, handleDelete]);
+
+    if (loading) {
+        return (
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+                <Spin size="large" />
+                <div style={{ marginTop: '16px' }}>正在加载文档列表...</div>
+            </div>
+        );
+    }
 
     return (
-        <div style={{ padding: '24px', background: '#f5f5f5', minHeight: 'calc(100vh - 64px)' }}>
-            <Card 
-                style={{ 
-                    marginBottom: '24px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                }}
-                bodyStyle={{ padding: '20px 24px' }}
-            >
-                <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    marginBottom: '24px'
-                }}>
-                    <div>
-                        <Title level={2} style={{ margin: 0, marginBottom: '4px' }}>
-                            我的工作台
-                        </Title>
-                        <Typography.Text type="secondary">
-                            管理您的文档和表单
-                        </Typography.Text>
-                    </div>
-                    <Space>
-                        <Button 
-                            type="primary" 
-                            icon={<PlusOutlined />}
-                            onClick={() => setIsModalVisible(true)}
-                            size="large"
-                        >
-                            新建文档
-                        </Button>
-                    </Space>
-                </div>
+        <div style={{ marginTop: '64px', padding: '24px' }}>
+            <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Title level={2} style={{ margin: 0 }}>我的文档</Title>
+                <Button 
+                    type="primary" 
+                    icon={<PlusOutlined />}
+                    onClick={() => setIsModalVisible(true)}
+                >
+                    新建文档
+                </Button>
+            </div>
 
-                <Table
-                    columns={columns}
-                    dataSource={docs}
-                    rowKey="id"
-                    loading={status === 'loading'}
-                    pagination={{
-                        pageSize: 10,
-                        showSizeChanger: true,
-                        showQuickJumper: true,
-                        showTotal: (total) => `共 ${total} 个项目`,
-                        style: { 
-                            display: 'flex', 
-                            justifyContent: 'center',
-                            marginTop: '24px'
-                        }
-                    }}
-                    style={{
-                        background: '#fff',
-                        borderRadius: '8px'
-                    }}
-                />
-            </Card>
+            {renderDocumentList}
 
             <Modal
                 title="新建文档"
@@ -213,24 +134,16 @@ const DashboardPage = ({ searchTerm = '' }) => {
                 }}
                 okText="创建"
                 cancelText="取消"
-                width={400}
             >
                 <Input
                     placeholder="请输入文档标题"
                     value={newDocTitle}
                     onChange={(e) => setNewDocTitle(e.target.value)}
                     onPressEnter={handleCreate}
-                    autoFocus
-                    size="large"
                 />
             </Modal>
-            
-            {/* AI Assistant for general conversations */}
-            <AiAssistant />
         </div>
     );
 };
 
 export default DashboardPage;
-
-

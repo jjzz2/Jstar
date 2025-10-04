@@ -1,30 +1,59 @@
-const express = require('express');
-const router = express.Router();
+const Router = require('@koa/router');
+const router = new Router();
 
+// 用户数据
 const users = {
-  'user-1': { id: 'user-1', name: 'Admin', username: 'admin', password: 'password' },
+  'user-1': { 
+    id: 'user-1', 
+    name: 'Admin', 
+    username: 'admin', 
+    password: 'password' 
+  },
 };
+
 const VALID_TOKEN = 'fake-jwt-token';
 
-router.post('/login', (req, res) => {
-  const { username, password } = req.body || {};
+/**
+ * 用户登录
+ * POST /api/auth/login
+ */
+router.post('/api/auth/login', async (ctx) => {
+  const { username, password } = ctx.request.body || {};
+  
+  if (!username || !password) {
+    ctx.status = 400;
+    ctx.body = { message: 'Username and password are required' };
+    return;
+  }
+  
   const user = users['user-1'];
   if (username === user.username && password === user.password) {
-    return res.status(200).json({ token: VALID_TOKEN, user: { id: user.id, name: user.name } });
+    ctx.body = { 
+      token: VALID_TOKEN, 
+      user: { id: user.id, name: user.name } 
+    };
+  } else {
+    ctx.status = 401;
+    ctx.body = { message: 'Invalid credentials' };
   }
-  return res.status(401).json({ message: 'Invalid credentials' });
 });
 
-router.get('/profile', (req, res) => {
-  const auth = req.headers['authorization'] || '';
+/**
+ * 获取用户信息
+ * GET /api/auth/profile
+ */
+router.get('/api/auth/profile', async (ctx) => {
+  const auth = ctx.headers['authorization'] || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+  
   if (token === VALID_TOKEN) {
     const user = users['user-1'];
-    return res.status(200).json({ id: user.id, name: user.name });
+    ctx.body = { id: user.id, name: user.name };
+  } else {
+    ctx.status = 401;
+    ctx.body = { message: 'Unauthorized' };
   }
-  return res.status(401).json({ message: 'Unauthorized' });
 });
 
 module.exports = router;
-
 

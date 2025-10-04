@@ -11,6 +11,7 @@
     "ahooks": "^3.9.5",
     "antd": "^5.27.4",
     "axios": "^1.12.2",
+    "concurrently": "^8.2.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-icons": "^5.5.0",
@@ -26,7 +27,10 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format:css": "prettier --write \"src/**/*.{css,scss}\"",
-    "lint:css": "stylelint \"src/**/*.{css,scss}\""
+    "lint:css": "stylelint \"src/**/*.{css,scss}\"",
+    "server": "cd server && node koa-server.js",
+    "server:dev": "cd server && $env:AI_API_KEY=\"sk-c258183c615e449086f9a4f8ddd33896\"; node koa-server.js",
+    "dev": "concurrently \"npm run server:dev\" \"npm start\""
   },
   "stylelint": {
     "extends": [

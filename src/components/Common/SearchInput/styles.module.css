@@ -1,0 +1,61 @@
+.searchContainer {
+  position: relative;
+  width: 100%;
+}
+
+.searchInput {
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.searchHistory {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+
+.historyItem {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #595959;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.historyItem:last-child {
+  border-bottom: none;
+}
+
+.historyItem:hover {
+  background-color: #f5f5f5;
+  color: #1890ff;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .searchInput {
+    border-radius: 16px;
+  }
+  
+  .historyItem {
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+}

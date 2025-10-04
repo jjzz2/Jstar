@@ -1,28 +1,26 @@
 import React from 'react';
-import { createBrowserRouter, Outlet } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import Layout from '../components/Layout';
 import ProtectedRoute from '../components/ProtectedRoute';
-import GlobalSpinner from '../components/GlobalSpinner';
 
 // 页面组件导入
 import DashboardPage from '../pages/DashboardPage';
 import EditorPage from '../pages/EditorPage';
 import TrashPage from '../pages/TrashPage';
+import FormsPage from '../pages/FormsPage';
 import FormBuilderPage from '../pages/FormBuilderPage';
-import ProfilePage from '../pages/ProfilePage';
-import SettingsPage from '../pages/SettingsPage';
-import LoginPage from '../pages/LoginPage';
-import RegisterPage from '../pages/RegisterPage';
+import UserSettingsPage from '../pages/UserSettingsPage';
+import AuthPage from '../pages/AuthPage';
 
 // 路由配置
 export const router = createBrowserRouter([
   {
     path: '/login',
-    element: <LoginPage />,
+    element: <AuthPage />,
   },
   {
     path: '/register',
-    element: <RegisterPage />,
+    element: <AuthPage />,
   },
   {
     path: '/',
@@ -40,6 +38,16 @@ export const router = createBrowserRouter([
       <Layout>
         <ProtectedRoute>
           <EditorPage />
+        </ProtectedRoute>
+      </Layout>
+    ),
+  },
+  {
+    path: '/forms',
+    element: (
+      <Layout>
+        <ProtectedRoute>
+          <FormsPage />
         </ProtectedRoute>
       </Layout>
     ),
@@ -69,7 +77,7 @@ export const router = createBrowserRouter([
     element: (
       <Layout>
         <ProtectedRoute>
-          <ProfilePage />
+          <UserSettingsPage />
         </ProtectedRoute>
       </Layout>
     ),
@@ -79,7 +87,7 @@ export const router = createBrowserRouter([
     element: (
       <Layout>
         <ProtectedRoute>
-          <SettingsPage />
+          <UserSettingsPage />
         </ProtectedRoute>
       </Layout>
     ),

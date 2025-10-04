@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { docsService } from '../../services/docsService';
+import { formsService } from '../../services/formsService';
 import AiAssistant from '../../components/AiAssistant';
 import { 
   Table, 
@@ -8,12 +9,15 @@ import {
   Typography, 
   Empty,
   message,
-  Popconfirm
+  Popconfirm,
+  Tag,
+  Card
 } from 'antd';
 import { 
-  AccountBookOutlined ,RestoreOutlined,
+  AccountBookOutlined,
   DeleteOutlined,
-  FileTextOutlined 
+  FileTextOutlined,
+  FormOutlined
 } from '@ant-design/icons';
 
 const { Title } = Typography;
@@ -25,8 +29,19 @@ const TrashPage = () => {
   const load = async () => {
     setIsLoading(true);
     try {
-      const list = await docsService.fetchDocumentList(true);
-      setDocs(list);
+      // 获取被删除的文档和表单
+      const [deletedDocs, deletedForms] = await Promise.all([
+        docsService.fetchDocumentList(true),
+        formsService.fetchFormList(true)
+      ]);
+      
+      // 合并并添加类型标识
+      const allItems = [
+        ...deletedDocs.map(item => ({ ...item, type: 'DOC' })),
+        ...deletedForms.map(item => ({ ...item, type: 'FORM' }))
+      ];
+      
+      setDocs(allItems);
     } finally {
       setIsLoading(false);
     }
@@ -37,10 +52,14 @@ const TrashPage = () => {
     load();
   }, []);
 
-  const restoreDoc = async (id) => {
+  const restoreDoc = async (id, type) => {
     try {
-      await docsService.updateDocumentTrashed(id, false);
-      message.success('文档已恢复');
+      if (type === 'DOC') {
+        await docsService.updateDocumentTrashed(id, false);
+      } else {
+        await formsService.updateFormTrashed(id, false);
+      }
+      message.success('已恢复');
       await load();
     } catch (e) {
       console.error(e);
@@ -48,10 +67,14 @@ const TrashPage = () => {
     }
   };
 
-  const deleteForever = async (id) => {
+  const deleteForever = async (id, type) => {
     try {
-      await docsService.deleteDocument(id);
-      message.success('文档已永久删除');
+      if (type === 'DOC') {
+        await docsService.deleteDocument(id);
+      } else {
+        await formsService.deleteForm(id);
+      }
+      message.success('已永久删除');
       await load();
     } catch (e) {
       console.error(e);
@@ -61,14 +84,27 @@ const TrashPage = () => {
 
   const columns = [
     {
-      title: '文档标题',
+      title: '项目标题',
       dataIndex: 'title',
       key: 'title',
-      render: (text) => (
+      render: (text, record) => (
         <Space>
-          <FileTextOutlined />
+          {record.type === 'FORM' ? <FormOutlined style={{ color: '#52c41a' }} /> : <FileTextOutlined style={{ color: '#1890ff' }} />}
           <span style={{ fontWeight: 500 }}>{text}</span>
+          <Tag color={record.type === 'FORM' ? 'green' : 'blue'}>
+            {record.type === 'FORM' ? '表单' : '文档'}
+          </Tag>
         </Space>
+      ),
+    },
+    {
+      title: '类型',
+      dataIndex: 'type',
+      key: 'type',
+      render: (type) => (
+        <Tag color={type === 'FORM' ? 'green' : 'blue'}>
+          {type === 'FORM' ? '表单' : '文档'}
+        </Tag>
       ),
     },
     {
@@ -86,14 +122,14 @@ const TrashPage = () => {
           <Button 
             type="link" 
             icon={<AccountBookOutlined />}
-            onClick={() => restoreDoc(record.id)}
+            onClick={() => restoreDoc(record.id, record.type)}
           >
             恢复
           </Button>
           <Popconfirm
             title="确定要永久删除吗？"
             description="此操作不可恢复。"
-            onConfirm={() => deleteForever(record.id)}
+            onConfirm={() => deleteForever(record.id, record.type)}
             okText="确定"
             cancelText="取消"
             okType="danger"
@@ -112,30 +148,52 @@ const TrashPage = () => {
   ];
 
   return (
-    <div>
-      <Title level={2} style={{ marginBottom: 16 }}>
-        回收站
-      </Title>
+    <div style={{ padding: '24px', background: '#f5f5f5', minHeight: 'calc(100vh - 64px)', marginTop: '64px' }}>
+      <Card 
+        style={{ 
+          marginBottom: '24px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+        }}
+        bodyStyle={{ padding: '20px 24px' }}
+      >
+        <div style={{ marginBottom: '24px' }}>
+          <Title level={2} style={{ margin: 0, marginBottom: '4px' }}>
+            回收站
+          </Title>
+          <Typography.Text type="secondary">
+            管理已删除的文档和表单
+          </Typography.Text>
+        </div>
 
-      {docs.length === 0 ? (
-        <Empty 
-          description="回收站为空"
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-        />
-      ) : (
-        <Table
-          columns={columns}
-          dataSource={docs}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 个已删除文档`,
-          }}
-        />
-      )}
+        {docs.length === 0 ? (
+          <Empty 
+            description="回收站为空"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={docs}
+            rowKey="id"
+            loading={isLoading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total) => `共 ${total} 个项目`,
+              style: { 
+                display: 'flex', 
+                justifyContent: 'center',
+                marginTop: '24px'
+              }
+            }}
+            style={{
+              background: '#fff',
+              borderRadius: '8px'
+            }}
+          />
+        )}
+      </Card>
       
       {/* AI Assistant for general conversations */}
       <AiAssistant />

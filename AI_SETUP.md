@@ -1,70 +1,78 @@
-# AI Assistant Setup Guide
+# AI助手配置指南
 
-## Overview
-The V5.0 upgrade includes an intelligent AI assistant that can help users with document-related tasks such as summarization, translation, and grammar checking.
+## 🔑 环境变量配置
 
-## Features
-- **General Conversations**: Available on all pages via the floating button in the bottom-right corner
-- **Document Context Awareness**: When used in the editor, the AI can see and analyze the current document content
-- **Professional UI**: Built with Ant Design components including Drawer, FloatButton, and chat interface
-- **Real-time Chat**: Smooth conversation experience with message history
-
-## Setup Instructions
-
-### 1. AI API Key Configuration
-To enable the AI assistant, you need to set up an AI service API key:
+### 1. 创建环境变量文件
+在项目根目录创建 `.env` 文件：
 
 ```bash
-# Create a .env file in the server directory
-cd server
-echo "AI_API_KEY=your_openai_api_key_here" > .env
-```
+# AI配置 - DeepSeek API
+AI_API_KEY=sk-c258183c615e449086f9a4f8ddd33896
 
-### 2. Supported AI Services
-The current implementation uses OpenAI's GPT-3.5-turbo model, but you can easily adapt it for other services:
-
-- **OpenAI**: Set `AI_API_KEY` to your OpenAI API key
-- **Other Services**: Modify the API endpoint and request format in `server/server.js`
-
-### 3. Environment Variables
-```bash
-# Server environment variables
-AI_API_KEY=sk-your-openai-api-key-here
+# 服务器配置  
 PORT=3001
+NODE_ENV=development
 ```
 
-### 4. Testing the AI Assistant
-1. Start the server: `cd server && npm start`
-2. Start the frontend: `npm start`
-3. Click the robot icon (🤖) in the bottom-right corner
-4. Try asking questions like:
-   - "你好，你能做什么？"
-   - In the editor: "总结一下这篇文档"
-   - "帮我检查语法错误"
+### 2. DeepSeek API配置
+项目已配置使用DeepSeek API，具有以下优势：
+- 🚀 **更快的响应速度**
+- 💰 **更低的成本**
+- 🇨🇳 **更好的中文支持**
+- 🔒 **数据安全可靠**
 
-## API Endpoint
-The AI assistant uses the `/api/ai/chat` endpoint:
+如需更换API密钥，请访问 [DeepSeek官网](https://platform.deepseek.com/) 获取新的API密钥。
 
-```javascript
-POST /api/ai/chat
+## 🛠️ 安装依赖
+
+项目已包含必要的依赖，无需额外安装：
+
+```json
 {
-  "prompt": "用户的问题",
-  "context": "文档内容（可选）"
+  "dependencies": {
+    "koa": "^2.15.0",
+    "@koa/router": "^12.0.1",
+    "koa-bodyparser": "^4.4.1"
+  }
 }
 ```
 
-## Customization
-You can customize the AI assistant by modifying:
-- `src/components/AiAssistant.jsx` - UI and chat logic
-- `server/server.js` - AI API integration and system prompts
-- System prompt in Chinese for document assistance tasks
+## 🚀 启动服务
 
-## Troubleshooting
-- **"AI service not configured"**: Make sure `AI_API_KEY` is set in your environment
-- **API errors**: Check your API key validity and quota
-- **Network issues**: Ensure the server can reach the AI service endpoint
+### 1. 启动后端服务器
+```bash
+cd server
+npm install
+npm start
+```
 
-## Security Notes
-- API keys are stored securely on the server side
-- Frontend never directly accesses AI service APIs
-- All requests go through the backend proxy for security
+### 2. 启动前端应用
+```bash
+npm install
+npm start
+```
+
+## 📝 使用说明
+
+1. 确保设置了 `AI_API_KEY` 环境变量
+2. 启动服务器和前端应用
+3. 在任意页面右下角点击机器人图标
+4. 开始与AI助手对话
+
+## 🔧 故障排除
+
+### 常见问题：
+
+1. **"AI service not configured"**
+   - 检查是否设置了 `AI_API_KEY` 环境变量
+   - 确保API密钥有效
+
+2. **"AI助手暂时不可用"**
+   - 检查网络连接
+   - 验证API密钥权限
+   - 查看服务器控制台错误信息
+
+3. **API调用失败**
+   - 检查OpenAI账户余额
+   - 确认API密钥权限设置
+   - 查看请求频率限制

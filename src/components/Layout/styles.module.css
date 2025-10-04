@@ -1,0 +1,29 @@
+.layout {
+  min-height: 100vh;
+}
+
+.header {
+  padding: 0;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sider {
+  background: #fff;
+  border-right: 1px solid #f0f0f0;
+  overflow: auto;
+  height: calc(100vh - 64px);
+  position: fixed;
+  left: 0;
+  top: 64px;
+  z-index: 1;
+  width: 240px;
+}
+
+.content {
+  margin-left: 240px;
+  padding: 24px;
+  background: #fff;
+  min-height: calc(100vh - 64px);
+}
+
