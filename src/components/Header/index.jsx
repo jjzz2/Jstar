@@ -6,6 +6,7 @@ import { UserOutlined, LogoutOutlined, SettingOutlined, MenuOutlined } from '@an
 import { logout } from '../../store/authSlice';
 import { SearchInput } from '../Common';
 import { useAuth } from '../../hooks';
+import { ROUTES } from '../../router/routes';
 import styles from './styles.module.css';
 
 const HISTORY_KEY = 'search_history';
@@ -19,9 +20,9 @@ const Header = ({ search, onSearchChange, onMobileMenuToggle }) => {
     if (key === 'logout') {
       handleLogout();
     } else if (key === 'profile') {
-      navigate('/profile');
+      navigate(ROUTES.PROFILE);
     } else if (key === 'settings') {
-      navigate('/settings');
+      navigate(ROUTES.SETTINGS);
     }
   };
 

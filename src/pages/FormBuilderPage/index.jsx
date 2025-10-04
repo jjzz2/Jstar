@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadFormData, saveFormData } from '../../store/formBuilderSlice';
 import FormBuilderLayout from './FormBuilderLayout';
+import { ROUTES } from '../../router/routes';
 
 const FormBuilderPage = () => {
   const { formId } = useParams();
@@ -28,7 +29,7 @@ const FormBuilderPage = () => {
     
     try {
       await dispatch(saveFormData({ formId, formData }));
-      navigate('/');
+      navigate(ROUTES.HOME);
     } catch (error) {
       console.error('Save failed:', error);
     }

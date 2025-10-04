@@ -2,6 +2,7 @@ import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from '../components/Layout';
 import ProtectedRoute from '../components/ProtectedRoute';
+import { ROUTES } from './routes';
 
 // 页面组件导入
 import WelcomePage from '../pages/WelcomePage';
@@ -17,19 +18,19 @@ import LocalFilesPage from '../pages/LocalFilesPage';
 // 路由配置
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: ROUTES.HOME,
     element: <WelcomePage />,
   },
   {
-    path: '/login',
+    path: ROUTES.LOGIN,
     element: <AuthPage />,
   },
   {
-    path: '/register',
+    path: ROUTES.REGISTER,
     element: <AuthPage />,
   },
   {
-    path: '/dashboard',
+    path: ROUTES.DOCS,
     element: (
       <Layout>
         <ProtectedRoute>
@@ -39,17 +40,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/docs',
-    element: (
-      <Layout>
-        <ProtectedRoute>
-          <DashboardPage />
-        </ProtectedRoute>
-      </Layout>
-    ),
-  },
-  {
-    path: '/local-files',
+    path: ROUTES.LOCAL_FILES,
     element: (
       <Layout>
         <ProtectedRoute>
@@ -69,7 +60,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/forms',
+    path: ROUTES.FORMS,
     element: (
       <Layout>
         <ProtectedRoute>
@@ -89,7 +80,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/trash',
+    path: ROUTES.TRASH,
     element: (
       <Layout>
         <ProtectedRoute>
@@ -99,7 +90,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/profile',
+    path: ROUTES.PROFILE,
     element: (
       <Layout>
         <ProtectedRoute>
@@ -109,7 +100,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/settings',
+    path: ROUTES.SETTINGS,
     element: (
       <Layout>
         <ProtectedRoute>

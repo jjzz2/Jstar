@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Typography, Space, Card, Row, Col, Statistic } from 'antd';
+import { ROUTES } from '../../router/routes';
 import { 
   FileTextOutlined, 
   FormOutlined, 
@@ -85,7 +86,7 @@ const WelcomePage = () => {
                 type="primary" 
                 size="large" 
                 icon={<FileTextOutlined />}
-                onClick={() => navigate('/docs')}
+                onClick={() => navigate(ROUTES.DOCS)}
                 className={styles.primaryButton}
               >
                 开始使用

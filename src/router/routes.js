@@ -5,8 +5,9 @@ export const ROUTES = {
   REGISTER: '/register',
   
   // 主要功能
-  DASHBOARD: '/',
+  HOME: '/',
   DOCS: '/docs',
+  LOCAL_FILES: '/local-files',
   FORMS: '/forms',
   TRASH: '/trash',
   
@@ -31,7 +32,9 @@ export const createRoute = {
 export const ROUTE_GUARDS = {
   // 需要认证的路由
   PROTECTED: [
-    ROUTES.DASHBOARD,
+    ROUTES.DOCS,
+    ROUTES.LOCAL_FILES,
+    ROUTES.FORMS,
     ROUTES.TRASH,
     ROUTES.PROFILE,
     ROUTES.SETTINGS,
@@ -39,6 +42,7 @@ export const ROUTE_GUARDS = {
   
   // 公开路由（不需要认证）
   PUBLIC: [
+    ROUTES.HOME,
     ROUTES.LOGIN,
     ROUTES.REGISTER,
   ],

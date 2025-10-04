@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, Upload, Button, message } from 'antd';
 import { HomeOutlined, DeleteOutlined, FormOutlined, UploadOutlined, FileOutlined } from '@ant-design/icons';
 import { openLocalFile } from '../../services/fileService';
+import { ROUTES } from '../../router/routes';
 import styles from './styles.module.css';
 
 const Sidebar = () => {
@@ -12,22 +13,22 @@ const Sidebar = () => {
 
   const menuItems = [
     {
-      key: '/docs',
+      key: ROUTES.DOCS,
       icon: <HomeOutlined />,
       label: '我的文档',
     },
     {
-      key: '/local-files',
+      key: ROUTES.LOCAL_FILES,
       icon: <FileOutlined />,
       label: '本地文件',
     },
     {
-      key: '/forms',
+      key: ROUTES.FORMS,
       icon: <FormOutlined />,
       label: '我的表单',
     },
     {
-      key: '/trash',
+      key: ROUTES.TRASH,
       icon: <DeleteOutlined />,
       label: '回收站',
     },

@@ -4,6 +4,7 @@ import { Navigate, useNavigate, Link } from 'react-router-dom';
 import { Form, Button, Card, Typography, Alert, Space, message, Tabs } from 'antd';
 import { loginUser } from '../../store/authSlice';
 import { UserNameField, EmailField, PasswordField, ConfirmPasswordField } from '../../components/Common';
+import { ROUTES } from '../../router/routes';
 import styles from './styles.module.css';
 
 const { Title, Text } = Typography;
@@ -19,7 +20,7 @@ const AuthPage = () => {
   const handleLogin = async (values) => {
     try {
       await dispatch(loginUser({ username: values.username, password: values.password }));
-      navigate('/');
+      navigate(ROUTES.HOME);
     } catch (error) {
       message.error('登录失败，请重试');
     }

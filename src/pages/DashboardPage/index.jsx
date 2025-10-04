@@ -1,20 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocuments } from '../../hooks';
-import { ItemCard } from '../../components/Common';
-import { 
-  Button, 
-  Typography, 
-  Modal, 
-  Input, 
-  message,
-  List,
-  Empty,
-  Spin
-} from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-
-const { Title } = Typography;
+import { message, Spin } from 'antd';
+import PageHeader from './PageHeader';
+import DocumentList from './DocumentList';
+import CreateDocumentModal from './CreateDocumentModal';
 
 const DashboardPage = ({ searchTerm = '' }) => {
     const navigate = useNavigate();
@@ -69,36 +59,16 @@ const DashboardPage = ({ searchTerm = '' }) => {
         navigate(`/docs/${doc.id}`);
     }, [navigate]);
 
-    // 渲染文档列表
-    const renderDocumentList = useMemo(() => {
-        if (documents.length === 0) {
-            return (
-                <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="暂无文档"
-                    style={{ marginTop: '50px' }}
-                />
-            );
-        }
+    // 处理打开创建文档模态框
+    const handleOpenCreateModal = useCallback(() => {
+        setIsModalVisible(true);
+    }, []);
 
-        return (
-            <List
-                grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 4 }}
-                dataSource={documents}
-                renderItem={(doc) => (
-                    <List.Item>
-                        <ItemCard
-                            item={doc}
-                            type="document"
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                            onView={handleEdit}
-                        />
-                    </List.Item>
-                )}
-            />
-        );
-    }, [documents, handleEdit, handleDelete]);
+    // 处理关闭创建文档模态框
+    const handleCloseCreateModal = useCallback(() => {
+        setIsModalVisible(false);
+        setNewDocTitle('');
+    }, []);
 
     if (loading) {
         return (
@@ -111,37 +81,21 @@ const DashboardPage = ({ searchTerm = '' }) => {
 
     return (
         <div style={{ marginTop: '64px', padding: '24px' }}>
-            <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Title level={2} style={{ margin: 0 }}>我的文档</Title>
-                <Button 
-                    type="primary" 
-                    icon={<PlusOutlined />}
-                    onClick={() => setIsModalVisible(true)}
-                >
-                    新建文档
-                </Button>
-            </div>
+            <PageHeader onCreateDocument={handleOpenCreateModal} />
 
-            {renderDocumentList}
+            <DocumentList 
+                documents={documents}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+            />
 
-            <Modal
-                title="新建文档"
-                open={isModalVisible}
+            <CreateDocumentModal
+                visible={isModalVisible}
+                onCancel={handleCloseCreateModal}
                 onOk={handleCreate}
-                onCancel={() => {
-                    setIsModalVisible(false);
-                    setNewDocTitle('');
-                }}
-                okText="创建"
-                cancelText="取消"
-            >
-                <Input
-                    placeholder="请输入文档标题"
-                    value={newDocTitle}
-                    onChange={(e) => setNewDocTitle(e.target.value)}
-                    onPressEnter={handleCreate}
-                />
-            </Modal>
+                title={newDocTitle}
+                onTitleChange={setNewDocTitle}
+            />
         </div>
     );
 };

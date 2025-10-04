@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import LeftPanel from './LeftPanel';
 import EditCanvas from './EditCanvas';
 import RightPanel from './RightPanel';
+import { ROUTES } from '../../router/routes';
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -27,7 +28,7 @@ const FormBuilderLayout = ({ onSave, loading }) => {
         <Space>
           <Button 
             icon={<ArrowLeftOutlined />} 
-            onClick={() => navigate('/')}
+            onClick={() => navigate(ROUTES.HOME)}
           >
             返回
           </Button>

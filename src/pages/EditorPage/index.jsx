@@ -5,6 +5,7 @@ import UmoEditor from '../../components/UmoEditor';
 import AiAssistant from '../../components/AiAssistant';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDocById, updateDocContent } from '../../store/docsSlice';
+import { ROUTES } from '../../router/routes';
 import styles from './styles.module.css';
 
 const EditorPage = () => {
@@ -48,7 +49,7 @@ const EditorPage = () => {
                     setSaveStatus('正在保存...');
                     await dispatch(updateDocContent({ id: documentId, content: doc.content || '' }));
                     setSaveStatus('已同步');
-                    navigate('/');
+                    navigate(ROUTES.HOME);
                 }}>保存并退出</button>
             </header>
             <main className="editor-main">

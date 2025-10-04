@@ -87,17 +87,7 @@ export const NOTIFICATION_TYPES = {
   INFO: 'info'
 };
 
-// 路由常量
-export const ROUTES = {
-  HOME: '/',
-  LOGIN: '/login',
-  REGISTER: '/register',
-  PROFILE: '/profile',
-  SETTINGS: '/settings',
-  DOCUMENTS: '/docs',
-  FORMS: '/forms',
-  TRASH: '/trash'
-};
+// 路由常量已移至 src/router/routes.js
 
 // 权限常量
 export const PERMISSIONS = {
