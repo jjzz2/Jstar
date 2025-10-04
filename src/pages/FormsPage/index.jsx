@@ -23,11 +23,8 @@ const FormsPage = () => {
   const {
     forms,
     loading,
-    error,
     handleCreateForm,
-    handleDeleteForm,
-    handleEditForm,
-    refreshForms
+    handleDeleteForm
   } = useForms();
 
   // 处理创建表单

@@ -4,7 +4,7 @@
 
 // API相关常量
 export const API_CONSTANTS = {
-  BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:3001',
+  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
   TIMEOUT: 10000,
   RETRY_COUNT: 3,
   RETRY_DELAY: 1000

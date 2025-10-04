@@ -22,15 +22,17 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format:css": "prettier --write \"src/**/*.{css,scss}\"",
     "lint:css": "stylelint \"src/**/*.{css,scss}\"",
     "server": "cd server && node koa-server.js",
     "server:dev": "cd server && $env:AI_API_KEY=\"sk-c258183c615e449086f9a4f8ddd33896\"; node koa-server.js",
-    "dev": "concurrently \"npm run server:dev\" \"npm start\""
+    "dev:full": "concurrently \"npm run server:dev\" \"npm run dev\""
   },
   "stylelint": {
     "extends": [
@@ -67,5 +69,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.4",
+    "vite": "^7.1.9"
   }
 }
