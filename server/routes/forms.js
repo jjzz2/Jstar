@@ -1,4 +1,6 @@
 const Router = require('@koa/router');
+const Form = require('../models/Form');
+const User = require('../models/User');
 const { generateId, nowIso } = require('../utils/dataGenerator');
 
 const router = new Router();
@@ -9,59 +11,117 @@ const router = new Router();
  * Query: trashed, search, page, limit, sort
  */
 router.get('/api/forms', async (ctx) => {
-  const documents = ctx.app.context.documents;
-  const { trashed, search, page = 1, limit = 20, sort = 'lastUpdated' } = ctx.query;
-  
-  const searchLower = typeof search === 'string' ? search.toLowerCase() : '';
-  const trashedBool = String(trashed).toLowerCase() === 'true';
-  const pageNum = parseInt(page, 10) || 1;
-  const limitNum = parseInt(limit, 10) || 20;
-  
-  let list = Array.from(documents.values())
-    .filter(d => d.type === 'FORM')
-    .filter(d => (trashedBool ? d.isTrashed === true : d.isTrashed === false))
-    .filter(d => (searchLower ? (d.title || '').toLowerCase().includes(searchLower) : true));
-  
-  // 排序
-  if (sort === 'title') {
-    list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-  } else if (sort === 'lastUpdated') {
-    list.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
-  }
-  
-  // 分页
-  const start = (pageNum - 1) * limitNum;
-  const end = start + limitNum;
-  const paginatedList = list.slice(start, end);
-  
-  const result = paginatedList.map(d => {
-    let description = '';
-    try {
-      const formData = JSON.parse(d.content);
-      description = formData.description || '';
-    } catch (e) {
-      description = '';
+  try {
+    const { trashed, search, page = 1, limit = 20, sort = 'lastUpdated' } = ctx.query;
+    
+    const trashedBool = String(trashed).toLowerCase() === 'true';
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 20;
+    
+    // 构建查询条件
+    const query = {
+      isTrashed: trashedBool
+    };
+    
+    // 搜索条件
+    if (search && typeof search === 'string') {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
     }
     
-    return { 
-      id: d.id, 
-      title: d.title, 
-      description,
-      lastUpdated: d.lastUpdated, 
-      isTrashed: d.isTrashed,
-      type: d.type 
-    };
-  });
-  
-  ctx.body = {
-    data: result,
-    pagination: {
-      page: pageNum,
-      limit: limitNum,
-      total: list.length,
-      pages: Math.ceil(list.length / limitNum)
+    // 排序条件
+    let sortOptions = {};
+    if (sort === 'title') {
+      sortOptions.title = 1;
+    } else if (sort === 'lastUpdated') {
+      sortOptions.lastUpdated = -1;
+    } else {
+      sortOptions.lastUpdated = -1;
     }
-  };
+    
+    // 执行查询
+    const total = await Form.countDocuments(query);
+    const forms = await Form.find(query)
+      .sort(sortOptions)
+      .skip((pageNum - 1) * limitNum)
+      .limit(limitNum)
+      .populate('author', 'name email')
+      .lean();
+    
+    const result = forms.map(form => {
+      let description = '';
+      try {
+        const formData = JSON.parse(form.content);
+        description = formData.description || '';
+      } catch (e) {
+        description = form.description || '';
+      }
+      
+      return {
+        id: form._id.toString(),
+        title: form.title,
+        description,
+        lastUpdated: form.lastUpdated,
+        isTrashed: form.isTrashed,
+        type: 'FORM',
+        author: form.author
+      };
+    });
+    
+    ctx.body = {
+      data: result,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        pages: Math.ceil(total / limitNum)
+      }
+    };
+  } catch (error) {
+    console.error('获取表单列表失败:', error);
+    ctx.status = 500;
+    ctx.body = { message: '获取表单列表失败' };
+  }
+});
+
+/**
+ * 获取表单统计信息
+ * GET /api/forms/stats
+ */
+router.get('/api/forms/stats', async (ctx) => {
+  try {
+    const total = await Form.countDocuments({ type: 'FORM' });
+    const active = await Form.countDocuments({ type: 'FORM', isTrashed: false });
+    const trashed = await Form.countDocuments({ type: 'FORM', isTrashed: true });
+    
+    const recent = await Form.find({ 
+      type: 'FORM', 
+      isTrashed: false 
+    })
+    .sort({ lastUpdated: -1 })
+    .limit(5)
+    .select('title lastUpdated')
+    .lean();
+    
+    const stats = {
+      total,
+      active,
+      trashed,
+      recent: recent.map(f => ({
+        id: f._id.toString(),
+        title: f.title,
+        lastUpdated: f.lastUpdated
+      }))
+    };
+    
+    ctx.body = stats;
+  } catch (error) {
+    console.error('获取表单统计失败:', error);
+    ctx.status = 500;
+    ctx.body = { message: '获取表单统计失败' };
+  }
 });
 
 /**
@@ -69,22 +129,40 @@ router.get('/api/forms', async (ctx) => {
  * GET /api/forms/:id
  */
 router.get('/api/forms/:id', async (ctx) => {
-  const documents = ctx.app.context.documents;
-  const form = documents.get(ctx.params.id);
-  
-  if (!form) {
-    ctx.status = 404;
-    ctx.body = { message: 'Form not found' };
-    return;
+  try {
+    const { id } = ctx.params;
+    
+    const form = await Form.findById(id)
+      .populate('author', 'name email')
+      .lean();
+    
+    if (!form) {
+      ctx.status = 404;
+      ctx.body = { message: 'Form not found' };
+      return;
+    }
+    
+    if (form.type !== 'FORM') {
+      ctx.status = 400;
+      ctx.body = { message: 'Not a form' };
+      return;
+    }
+    
+    ctx.body = {
+      id: form._id.toString(),
+      title: form.title,
+      description: form.description,
+      content: form.content,
+      lastUpdated: form.lastUpdated,
+      isTrashed: form.isTrashed,
+      type: form.type,
+      author: form.author
+    };
+  } catch (error) {
+    console.error('获取表单失败:', error);
+    ctx.status = 500;
+    ctx.body = { message: '获取表单失败' };
   }
-  
-  if (form.type !== 'FORM') {
-    ctx.status = 400;
-    ctx.body = { message: 'Not a form' };
-    return;
-  }
-  
-  ctx.body = form;
 });
 
 /**
@@ -321,32 +399,6 @@ router.post('/api/forms/batch', async (ctx) => {
   ctx.body = { results };
 });
 
-/**
- * 获取表单统计信息
- * GET /api/forms/stats
- */
-router.get('/api/forms/stats', async (ctx) => {
-  const documents = ctx.app.context.documents;
-  
-  const forms = Array.from(documents.values()).filter(d => d.type === 'FORM');
-  
-  const stats = {
-    total: forms.length,
-    active: forms.filter(f => !f.isTrashed).length,
-    trashed: forms.filter(f => f.isTrashed).length,
-    recent: forms
-      .filter(f => !f.isTrashed)
-      .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated))
-      .slice(0, 5)
-      .map(f => ({
-        id: f.id,
-        title: f.title,
-        lastUpdated: f.lastUpdated
-      }))
-  };
-  
-  ctx.body = stats;
-});
 
 /**
  * 复制表单

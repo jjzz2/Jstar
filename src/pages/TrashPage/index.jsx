@@ -30,10 +30,14 @@ const TrashPage = () => {
     setIsLoading(true);
     try {
       // 获取被删除的文档和表单
-      const [deletedDocs, deletedForms] = await Promise.all([
+      const [deletedDocsResponse, deletedFormsResponse] = await Promise.all([
         docsService.fetchDocumentList(true),
         formsService.fetchFormList(true)
       ]);
+      
+      // 提取数据数组
+      const deletedDocs = Array.isArray(deletedDocsResponse?.data) ? deletedDocsResponse.data : [];
+      const deletedForms = Array.isArray(deletedFormsResponse?.data) ? deletedFormsResponse.data : [];
       
       // 合并并添加类型标识
       const allItems = [

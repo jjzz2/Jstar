@@ -203,7 +203,7 @@ const useForms = (options = {}) => {
   const statistics = useMemo(() => {
     if (!formsData?.data) return null;
     
-    const forms = formsData.data;
+    const forms = Array.isArray(formsData.data) ? formsData.data : [];
     const total = formsData.total || 0;
     const recentCount = forms.filter(form => {
       const oneWeekAgo = new Date();
@@ -221,7 +221,7 @@ const useForms = (options = {}) => {
 
   return {
     // 数据
-    forms: formsData?.data || [],
+    forms: Array.isArray(formsData?.data) ? formsData.data : [],
     total: formsData?.total || 0,
     statistics,
     

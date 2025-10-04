@@ -40,11 +40,11 @@ const EditorPage = () => {
     }
 
     return (
-        <div className={`editor-layout ${styles.container}`}>
+        <div className="editor-layout">
             <header className="editor-header">
                 <Link to="/" className="back-link">&larr; 返回文档列表</Link>
-                <div className={`save-status ${styles.status}`}>{doc.title || '未命名文档'} · 状态: {saveStatus}</div>
-                <button className="create-doc-btn" style={{ marginLeft: 12 }} onClick={async () => {
+                <div className="save-status">{doc.title || '未命名文档'} · 状态: {saveStatus}</div>
+                <button className="create-doc-btn" onClick={async () => {
                     setSaveStatus('正在保存...');
                     await dispatch(updateDocContent({ id: documentId, content: doc.content || '' }));
                     setSaveStatus('已同步');

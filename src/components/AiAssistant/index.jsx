@@ -7,7 +7,6 @@ import {
   Spin,
   message
 } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
 import { SmartRobotIcon } from '../IconFont';
 import { apiClient } from '../../api';
 import ChatMessage from './ChatMessage';
@@ -107,12 +106,6 @@ const AiAssistant = ({ documentContext = null }) => {
           <div className={styles.drawerTitle}>
             <SmartRobotIcon className={styles.titleIcon} />
             <span>AI助手</span>
-            <Button 
-              type="text" 
-              icon={<CloseOutlined />} 
-              onClick={() => setOpen(false)}
-              className={styles.closeButton}
-            />
           </div>
         }
         placement="right"

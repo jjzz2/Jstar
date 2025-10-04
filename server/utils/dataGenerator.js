@@ -115,7 +115,7 @@ function generateDocument() {
   const title = faker.lorem.sentence({ min: 3, max: 8 }).replace('.', '');
   const content = generateDocumentContent(title);
   const lastUpdated = faker.date.past({ years: 0.5 }).toISOString();
-  const isTrashed = faker.datatype.boolean({ probability: 0.2 });
+  const isTrashed = faker.datatype.boolean({ probability: 0.3 }); // 增加trash概率
   
   return {
     id,
@@ -137,7 +137,7 @@ function generateForm() {
     questions: generateFormQuestions()
   };
   const lastUpdated = faker.date.past({ years: 0.5 }).toISOString();
-  const isTrashed = faker.datatype.boolean({ probability: 0.15 });
+  const isTrashed = faker.datatype.boolean({ probability: 0.25 }); // 增加trash概率
   
   return {
     id,

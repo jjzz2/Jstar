@@ -14,7 +14,7 @@ export class ApiUtils {
     return async (...args) => {
       try {
         const result = await apiFunction(...args);
-        return result;
+        return result.data;
       } catch (error) {
         console.error('API请求失败:', error);
         throw error;
@@ -73,32 +73,32 @@ export class ApiUtils {
 export const documentApiUtils = {
   // 获取文档列表
   fetchDocuments: ApiUtils.createRequest(
-    (params) => apiClient.get('/documents', { params })
+    (params) => apiClient.get('/docs', { params })
   ),
   
   // 获取单个文档
   fetchDocument: ApiUtils.createRequest(
-    (id) => apiClient.get(`/documents/${id}`)
+    (id) => apiClient.get(`/docs/${id}`)
   ),
   
   // 创建文档
   createDocument: ApiUtils.createRequest(
-    (data) => apiClient.post('/documents', data)
+    (data) => apiClient.post('/docs', data)
   ),
   
   // 更新文档
   updateDocument: ApiUtils.createRequest(
-    ({ id, ...data }) => apiClient.patch(`/documents/${id}`, data)
+    ({ id, ...data }) => apiClient.patch(`/docs/${id}`, data)
   ),
   
   // 删除文档
   deleteDocument: ApiUtils.createRequest(
-    (id) => apiClient.delete(`/documents/${id}`)
+    (id) => apiClient.delete(`/docs/${id}`)
   ),
   
   // 搜索文档
   searchDocuments: ApiUtils.createRequest(
-    (searchTerm) => apiClient.get('/documents', { 
+    (searchTerm) => apiClient.get('/docs', { 
       params: { search: searchTerm } 
     })
   )

@@ -1,12 +1,10 @@
 const Router = require('@koa/router');
 const OpenAI = require('openai');
+const config = require('../config');
 const router = new Router();
 
-// 初始化OpenAI客户端
-const openai = new OpenAI({
-  baseURL: 'https://api.deepseek.com',
-  apiKey: process.env.AI_API_KEY,
-});
+// 延迟初始化OpenAI客户端
+let openai = null;
 
 /**
  * AI聊天接口
@@ -22,13 +20,21 @@ router.post('/api/ai/chat', async (ctx) => {
       return;
     }
 
-    const apiKey = process.env.AI_API_KEY;
+    const apiKey = config.AI_API_KEY;
     if (!apiKey) {
       ctx.status = 500;
       ctx.body = { 
-        error: 'AI service not configured. Please set AI_API_KEY environment variable.' 
+        error: 'AI service not configured. Please check config.js file.' 
       };
       return;
+    }
+
+    // 延迟初始化OpenAI客户端
+    if (!openai) {
+      openai = new OpenAI({
+        baseURL: 'https://api.deepseek.com',
+        apiKey: apiKey,
+      });
     }
 
     let messages = [

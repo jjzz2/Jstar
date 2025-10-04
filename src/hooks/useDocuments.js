@@ -138,7 +138,7 @@ const useDocuments = (options = {}) => {
   const statistics = useMemo(() => {
     if (!documentsData?.data) return null;
     
-    const documents = documentsData.data;
+    const documents = Array.isArray(documentsData.data) ? documentsData.data : [];
     const total = documentsData.total || 0;
     const recentCount = documents.filter(doc => {
       const oneWeekAgo = new Date();
@@ -155,7 +155,7 @@ const useDocuments = (options = {}) => {
 
   return {
     // 数据
-    documents: documentsData?.data || [],
+    documents: Array.isArray(documentsData?.data) ? documentsData.data : [],
     total: documentsData?.total || 0,
     statistics,
     
