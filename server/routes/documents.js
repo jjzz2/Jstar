@@ -13,7 +13,7 @@ const router = new Router();
 router.get('/api/docs', async (ctx) => {
   try {
     const { trashed, search, page = 1, limit = 20, sort = 'lastUpdated' } = ctx.query;
-    
+    console.log('trashed',trashed)
     const trashedBool = String(trashed).toLowerCase() === 'true';
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 20;
