@@ -6,11 +6,7 @@ import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import { store } from '@store/store';
 import { router } from '@/router';
-import { initPerformanceMonitoring } from '@utils';
 import './index.css';
-
-// 初始化性能监控
-initPerformanceMonitoring();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

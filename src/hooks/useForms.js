@@ -137,10 +137,18 @@ const useForms = (options = {}) => {
   // 处理创建表单
   const handleCreateForm = useCallback(async (formData) => {
     try {
+      console.log('useForms: 开始创建表单，数据:', formData);
       const result = await createForm(formData);
+      console.log('useForms: 表单创建成功，结果:', result);
       return result;
     } catch (error) {
-      console.error('创建表单失败:', error);
+      console.error('useForms: 创建表单失败:', error);
+      console.error('useForms: 错误详情:', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data
+      });
       throw error;
     }
   }, [createForm]);

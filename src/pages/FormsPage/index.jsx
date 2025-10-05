@@ -30,16 +30,25 @@ const FormsPage = () => {
   // 处理创建表单
   const handleCreate = useCallback(async () => {
     try {
+      console.log('开始创建表单...');
       const result = await handleCreateForm({
         title: '新建表单',
         description: '',
         type: 'FORM'
       });
       
+      console.log('表单创建成功:', result);
       message.success('表单创建成功');
       navigate(`/forms/${result.data.id}`);
     } catch (error) {
-      message.error('创建表单失败');
+      console.error('创建表单失败:', error);
+      console.error('错误详情:', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data
+      });
+      message.error(`创建表单失败: ${error.message}`);
     }
   }, [handleCreateForm, navigate]);
 

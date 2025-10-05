@@ -154,7 +154,7 @@ router.post('/api/docs', async (ctx) => {
     // 创建文档数据
     const documentData = {
       title,
-      content,
+      content: content || '', // 确保内容不为空
       type,
       isTrashed: false,
       author: null, // 暂时不设置作者，避免引用错误

@@ -14,8 +14,34 @@ export const docsService = {
 
   // GET /docs/:id
   fetchDocument: async (id) => {
-    const { data } = await apiClient.get(`/docs/${id}`);
-    return data; // {id, title, content, lastUpdated}
+    try {
+      console.log('docsService.fetchDocument called with ID:', id);
+      const { data } = await apiClient.get(`/docs/${id}`);
+      console.log('docsService.fetchDocument response:', data);
+      return data; // {id, title, content, lastUpdated}
+    } catch (error) {
+      console.error('docsService.fetchDocument error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data
+      });
+      
+      // 如果文档不存在，返回默认文档
+      if (error.response?.status === 404) {
+        console.log('Document not found, returning default document');
+        return {
+          id,
+          title: '未命名文档',
+          content: '',
+          lastUpdated: new Date().toISOString(),
+          type: 'DOC'
+        };
+      }
+      
+      throw error;
+    }
   },
 
   // POST /docs

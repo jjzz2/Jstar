@@ -18,7 +18,10 @@ const EditorPage = () => {
 
     useEffect(() => {
         document.title = "加载中...";
-        dispatch(fetchDocById({ id: documentId }));
+        console.log('EditorPage: Loading document with ID:', documentId);
+        dispatch(fetchDocById({ id: documentId })).catch(error => {
+            console.error('EditorPage: Failed to load document:', error);
+        });
     }, [documentId, dispatch]);
 
     const saveContent = useCallback(async (newContent) => {

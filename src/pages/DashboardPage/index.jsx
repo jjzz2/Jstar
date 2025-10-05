@@ -23,24 +23,43 @@ const DashboardPage = ({ searchTerm = '' }) => {
 
     // 处理创建文档
     const handleCreate = useCallback(async () => {
+        console.log('handleCreate 被调用', { newDocTitle, loading });
+        
         if (!newDocTitle.trim()) {
             message.error('请输入文档标题');
             return;
         }
 
         try {
+            console.log('开始创建文档...');
             const result = await handleCreateDocument({
                 title: newDocTitle.trim(),
                 content: '',
                 type: 'DOC'
             });
             
+            console.log('文档创建成功:', result);
             message.success('文档创建成功');
             setIsModalVisible(false);
             setNewDocTitle('');
             navigate(`/docs/${result.data.id}`);
         } catch (error) {
-            message.error('创建文档失败');
+            console.error('创建文档失败:', error);
+            console.error('错误详情:', {
+                message: error.message,
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data
+            });
+            
+            // 根据错误类型显示不同的错误信息
+            if (error.response?.status === 500) {
+                message.error('服务器内部错误，请稍后重试');
+            } else if (error.response?.status === 400) {
+                message.error('请求参数错误，请检查输入');
+            } else {
+                message.error(`创建文档失败: ${error.message}`);
+            }
         }
     }, [newDocTitle, handleCreateDocument, navigate]);
 

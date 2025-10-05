@@ -11,11 +11,15 @@ const FormBuilderPage = () => {
   const navigate = useNavigate();
   const { componentList, pageInfo, loading, selectedId } = useSelector(state => state.formBuilder);
 
+  console.log('FormBuilderPage rendered with formId:', formId, 'Type:', typeof formId, 'Length:', formId?.length);
+
   useEffect(() => {
     if (formId) {
-      console.log('Loading form data for ID:', formId);
+      console.log('Loading form data for ID:', formId, 'Full ID:', JSON.stringify(formId));
       dispatch(loadFormData(formId)).catch(error => {
         console.error('Failed to load form data:', error);
+        // 如果表单不存在，可以在这里处理
+        // 比如重定向到新建表单页面或显示错误信息
       });
     }
   }, [formId, dispatch]);

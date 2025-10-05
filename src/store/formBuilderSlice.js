@@ -130,9 +130,16 @@ const initialState = {
 // Async thunks
 export const loadFormData = createAsyncThunk(
   'formBuilder/loadFormData',
-  async (formId) => {
-    const formData = await formsService.fetchForm(formId);
-    return formData;
+  async (formId, { rejectWithValue }) => {
+    try {
+      console.log('Loading form data for ID:', formId);
+      const formData = await formsService.fetchForm(formId);
+      console.log('Form data loaded:', formData);
+      return formData;
+    } catch (error) {
+      console.error('Failed to load form data:', error);
+      return rejectWithValue(error.message);
+    }
   }
 );
 

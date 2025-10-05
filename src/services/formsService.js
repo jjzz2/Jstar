@@ -17,20 +17,70 @@ export const formsService = {
 
   // GET /forms/:id
   fetchForm: async (id) => {
-    const { data } = await apiClient.get(`/forms/${id}`);
-    return data; // {id, title, content, lastUpdated, type}
+    try {
+      console.log('fetchForm called with ID:', id, 'Type:', typeof id, 'Length:', id?.length);
+      const url = `/forms/${encodeURIComponent(id)}`;
+      console.log('Request URL:', url);
+      const { data } = await apiClient.get(url);
+      console.log('API response:', data);
+      return data; // {id, title, content, lastUpdated, type}
+    } catch (error) {
+      console.error('Failed to fetch form:', error);
+      console.error('Error details:', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        url: error.config?.url
+      });
+      // 如果表单不存在，返回默认数据
+      if (error.response?.status === 400 || error.response?.status === 404) {
+        console.log('Returning default form data for ID:', id);
+        return {
+          id,
+          title: '未命名表单',
+          content: JSON.stringify({
+            title: '未命名表单',
+            description: '',
+            questions: []
+          }),
+          lastUpdated: new Date().toISOString(),
+          type: 'FORM'
+        };
+      }
+      throw error;
+    }
   },
 
   // GET /forms/:id/structure
   fetchFormStructure: async (id) => {
-    const { data } = await apiClient.get(`/forms/${id}/structure`);
-    return data; // {title, description, questions}
+    try {
+      const { data } = await apiClient.get(`/forms/${id}/structure`);
+      return data; // {title, description, questions}
+    } catch (error) {
+      console.error('Failed to fetch form structure:', error);
+      // 如果结构不存在，返回默认数据
+      if (error.response?.status === 400 || error.response?.status === 404) {
+        return {
+          title: '未命名表单',
+          description: '',
+          questions: []
+        };
+      }
+      throw error;
+    }
   },
 
   // POST /forms
-  createForm: async (title, description = '') => {
-    const { data } = await apiClient.post('/forms', { title, description });
-    return data; // {id, title, content, lastUpdated, type}
+  createForm: async (formData) => {
+    console.log('formsService.createForm called with:', formData);
+    try {
+      const { data } = await apiClient.post('/forms', formData);
+      console.log('formsService.createForm API response:', data);
+      return data; // {id, title, content, lastUpdated, type}
+    } catch (error) {
+      console.error('formsService.createForm error:', error);
+      throw error;
+    }
   },
 
   // PATCH /forms/:id

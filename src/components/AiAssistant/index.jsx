@@ -4,14 +4,13 @@ import {
   Drawer, 
   Button, 
   Avatar,
-  Spin,
-  message
+  Spin
 } from 'antd';
 import { SmartRobotIcon } from '../IconFont';
-import { apiClient } from '../../api';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import WelcomeMessage from './WelcomeMessage';
+import { sendMessage, createUserMessage, formatTime, handleKeyPress } from './sendMessage';
 import styles from './styles.module.css';
 
 const AiAssistant = ({ documentContext = null }) => {
@@ -29,67 +28,32 @@ const AiAssistant = ({ documentContext = null }) => {
     scrollToBottom();
   }, [messages]);
 
-  const sendMessage = async () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim() || loading) return;
 
-    const userMessage = {
-      id: Date.now(),
-      type: 'user',
-      content: inputValue.trim(),
-      timestamp: new Date()
-    };
-
+    const userMessage = createUserMessage(inputValue);
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
-    setLoading(true);
 
-    try {
-      const response = await apiClient.post('/ai/chat', {
-        prompt: userMessage.content,
-        context: documentContext
-      });
-
-      const aiMessage = {
-        id: Date.now() + 1,
-        type: 'ai',
-        content: response.data.reply,
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
-    } catch (error) {
-      console.error('AI聊天失败:', error);
-      message.error('AI助手暂时不可用，请稍后再试');
-      
-      const errorMessage = {
-        id: Date.now() + 1,
-        type: 'ai',
-        content: '抱歉，我现在无法回答您的问题。请稍后再试。',
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
+    await sendMessage({
+      userMessage: userMessage.content,
+      documentContext,
+      onSuccess: (aiMessage) => {
+        setMessages(prev => [...prev, aiMessage]);
+      },
+      onError: (errorMessage) => {
+        setMessages(prev => [...prev, errorMessage]);
+      },
+      onLoadingChange: setLoading
+    });
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  const onKeyPress = (e) => {
+    handleKeyPress(e, handleSendMessage);
   };
 
   const clearChat = () => {
     setMessages([]);
-  };
-
-  const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleTimeString('zh-CN', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   return (
@@ -152,8 +116,8 @@ const AiAssistant = ({ documentContext = null }) => {
           <ChatInput
             inputValue={inputValue}
             setInputValue={setInputValue}
-            onSendMessage={sendMessage}
-            onKeyPress={handleKeyPress}
+            onSendMessage={handleSendMessage}
+            onKeyPress={onKeyPress}
             loading={loading}
           />
           
