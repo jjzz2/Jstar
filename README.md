@@ -1,4 +1,4 @@
-# 腾讯文档克隆项目
+# 项目
 
 一个现代化的文档协作平台，集成AI智能助手，支持文档创建、编辑、协作和本地文件管理。
 
@@ -9,7 +9,6 @@
 - **本地文件支持**: 打开本地文件并在编辑器中编辑
 - **AI智能助手**: 集成DeepSeek AI，提供智能写作辅助
 - **表单构建器**: 可视化表单设计工具
-- **实时协作**: 多人在线编辑支持
 - **回收站**: 文档和表单的软删除管理
 
 ### 技术特性
@@ -22,7 +21,7 @@
 ## 🛠 技术栈
 
 ### 前端
-- **React 19**: 最新版本的React框架
+- **React 18**: 最新版本的React框架
 - **Vite**: 快速的构建工具和开发服务器
 - **Ant Design**: 企业级UI组件库
 - **Redux Toolkit**: 状态管理
@@ -159,14 +158,6 @@ tencent-docs-clone/
 - `GET /api/forms` - 获取表单列表
 - `POST /api/forms` - 创建表单
 - `GET /api/forms/:id` - 获取单个表单
-
-## 🤝 贡献指南
-
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开 Pull Request
 
 ## 📄 许可证
 
