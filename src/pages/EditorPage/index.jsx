@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDebounceFn } from 'ahooks';
-import UmoEditor from '../../components/UmoEditor';
+import MiniEditorWrapper from '../../components/MiniEditor';
 import AiAssistant from '../../components/AiAssistant';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDocById, updateDocContent } from '../../store/docsSlice';
@@ -56,7 +56,7 @@ const EditorPage = () => {
                 }}>保存并退出</button>
             </header>
             <main className="editor-main">
-                <UmoEditor
+                <MiniEditorWrapper
                     initialContent={doc.content || ''}
                     onChange={handleEditorChange}
                 />
